@@ -15,6 +15,7 @@ A command-line personal finance management system developed in Java for the Prog
 - Classes and objects
 - Encapsulation
 - Inheritance and polymorphism
+- Abstraction
 - Collections (`ArrayList`)
 - Exception handling
 - File handling
@@ -45,12 +46,19 @@ SmartSpend-Java/
 │   ├── service/
 │   └── util/
 ├── data/
-└── tests/
+├── tests/
+└── docs/
+    ├── diagrams.md
+    ├── project-report.md
+    ├── test-cases.md
+    └── demo-script.md
 ```
 
 ## Compile and Run
 
 From the repository root:
+
+### Linux / macOS / Git Bash
 
 ```bash
 javac -d out $(find src -name "*.java")
@@ -65,13 +73,26 @@ javac -d out @sources.txt
 java -cp out com.smartspend.Main
 ```
 
+## Test
+
+Compile the application and test sources, then run the test class:
+
+```bash
+javac -d out $(find src tests -name "*.java")
+java -cp out SmartSpendTest
+```
+
+## Documentation
+
+- [Project Statement](statement.md)
+- [Project Report](docs/project-report.md)
+- [UML & Architecture Diagrams](docs/diagrams.md)
+- [Test Cases](docs/test-cases.md)
+- [Demo / Viva Script](docs/demo-script.md)
+
 ## Data Storage
 
 The application uses simple text files in the `data/` directory for local persistence. The application creates required files when needed.
-
-## Testing
-
-Test cases cover registration/login, valid and invalid transaction input, budget calculation, report generation, and file persistence.
 
 ## Author
 
