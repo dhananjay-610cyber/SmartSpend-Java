@@ -1,0 +1,21 @@
+package com.smartspend;
+
+import com.smartspend.model.*; import com.smartspend.service.*; import com.smartspend.util.ValidationUtil; import java.time.*; import java.util.*;
+
+public class Main {
+ private static final Scanner sc=new Scanner(System.in); private static final UserManager users=new UserManager(); private static final ExpenseManager expenses=new ExpenseManager(); private static final IncomeManager incomes=new IncomeManager(); private static final BudgetManager budgets=new BudgetManager(); private static final ReportManager reports=new ReportManager();
+ public static void main(String[] args){System.out.println("\n========================================\n        SMARTSPEND\n  Personal Expense Manager\n========================================");while(true){System.out.println("\n1. Register\n2. Login\n3. Exit");String c=sc.nextLine().trim();try{if(c.equals("1"))register();else if(c.equals("2")){User u=login();if(u!=null)dashboard(u.getUsername());}else if(c.equals("3")){System.out.println("Thank you for using SmartSpend!");return;}else System.out.println("Invalid choice.");}catch(Exception e){System.out.println("Error: "+e.getMessage());}}}
+ private static void register(){System.out.print("Username (3-20 letters/numbers/_): ");String u=sc.nextLine().trim();System.out.print("Password (minimum 4 characters): ");String p=sc.nextLine();if(!ValidationUtil.validUsername(u)||!ValidationUtil.validPassword(p)){System.out.println("Invalid username or password.");return;}System.out.println(users.register(u,p)?"Registration successful.":"Username already exists.");}
+ private static User login(){System.out.print("Username: ");String u=sc.nextLine().trim();System.out.print("Password: ");String p=sc.nextLine();User x=users.login(u,p);System.out.println(x==null?"Invalid credentials.":"Login successful!");return x;}
+ private static void dashboard(String u){while(true){System.out.println("\n=========== DASHBOARD ===========\n1. Add Income\n2. Add Expense\n3. View Expenses\n4. View Income\n5. Set Budget\n6. View Financial Report\n7. Delete Expense\n8. Logout");String c=sc.nextLine().trim();try{switch(c){case "1"->addIncome(u);case "2"->addExpense(u);case "3"->viewExpenses(u);case "4"->viewIncome(u);case "5"->setBudget(u);case "6"->report(u);case "7"->deleteExpense(u);case "8"-> {return;}default->System.out.println("Invalid choice.");}}catch(Exception e){System.out.println("Error: "+e.getMessage());}}}
+ private static double amount(){System.out.print("Amount: ");return ValidationUtil.positiveAmount(sc.nextLine().trim());}
+ private static String category(){System.out.print("Category: ");return sc.nextLine().trim();}
+ private static String desc(){System.out.print("Description: ");return sc.nextLine().trim();}
+ private static void addIncome(String u){double a=amount();incomes.add(new Income(u,a,category(),desc(),LocalDate.now()));System.out.println("Income added.");}
+ private static void addExpense(String u){double a=amount();expenses.add(new Expense(u,a,category(),desc(),LocalDate.now()));System.out.println("Expense added.");}
+ private static void viewExpenses(String u){List<Expense> l=expenses.get(u);if(l.isEmpty()){System.out.println("No expenses found.");return;}for(int i=0;i<l.size();i++){Expense e=l.get(i);System.out.printf("%d. %s | %.2f | %s | %s | %s%n",i+1,e.getDate(),e.getAmount(),e.getCategory(),e.getDescription(),e.getType());}}
+ private static void viewIncome(String u){List<Income> l=incomes.get(u);if(l.isEmpty()){System.out.println("No income found.");return;}for(Income e:l)System.out.printf("%s | %.2f | %s | %s%n",e.getDate(),e.getAmount(),e.getCategory(),e.getDescription());}
+ private static void setBudget(String u){System.out.print("Month (YYYY-MM): ");String m=sc.nextLine().trim();YearMonth.parse(m);double a=amount();budgets.set(new Budget(u,m,a));System.out.println("Budget saved.");}
+ private static void report(String u){String m=YearMonth.now().toString();Budget b=budgets.get(u,m);reports.print(u,incomes.get(u),expenses.get(u),b);}
+ private static void deleteExpense(String u){viewExpenses(u);System.out.print("Enter expense number to delete: ");int n=Integer.parseInt(sc.nextLine().trim());if(n<1||!expenses.delete(u,n-1))System.out.println("Invalid expense number.");else System.out.println("Expense deleted.");}
+}
